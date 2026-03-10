@@ -1,0 +1,7 @@
+# Background images (local only, not tracked)
+backdrops/*.jpg
+backdrops/*.jpeg
+backdrops/*.png
+backdrops/*.gif
+backdrops/*.bmp
+backdrops/*.tiff
