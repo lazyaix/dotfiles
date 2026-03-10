@@ -37,22 +37,24 @@ end
 ---@param key string
 ---@return table
 local function split_nav(resize_or_move, key)
+  local mods = resize_or_move == 'resize' and 'ALT' or 'CTRL'
   return {
     key = key,
-    mods = resize_or_move == 'resize' and 'ALT' or 'CTRL',
+    mods = mods,
     action = wezterm.action_callback(function(win, pane)
       if is_nvim(pane) then
         -- Pass keys through to Neovim
-        win:perform_action({
-          SendKey = {
-            key = key,
-            mods = resize_or_move == 'resize' and 'ALT' or 'CTRL',
-          },
-        }, pane)
-      elseif resize_or_move == 'resize' then
-        win:perform_action({ AdjustPaneSize = { direction_keys[key], 3 } }, pane)
+        win:perform_action({ SendKey = { key = key, mods = mods } }, pane)
       else
-        win:perform_action({ ActivatePaneDirection = direction_keys[key] }, pane)
+        local panes = pane:tab():panes()
+        if #panes == 1 then
+          -- Single WezTerm pane — pass keys through for tmux inside Docker/SSH
+          win:perform_action({ SendKey = { key = key, mods = mods } }, pane)
+        elseif resize_or_move == 'resize' then
+          win:perform_action({ AdjustPaneSize = { direction_keys[key], 3 } }, pane)
+        else
+          win:perform_action({ ActivatePaneDirection = direction_keys[key] }, pane)
+        end
       end
     end),
   }
