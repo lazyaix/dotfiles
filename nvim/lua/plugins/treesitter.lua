@@ -1,22 +1,27 @@
 -- Customize Treesitter
+-- Treesitter customizations are handled with AstroCore
+-- as nvim-treesitter simply provides a download utility for parsers
 
 ---@type LazySpec
 return {
-  "nvim-treesitter/nvim-treesitter",
+  "AstroNvim/astrocore",
+  ---@type AstroCoreOpts
   opts = {
-    ensure_installed = {
-      "lua",
-      "vim",
-      "vimdoc",
-      "bash",
-      "json",
-      "jsonc",
-      "yaml",
-      "toml",
-      "markdown",
-      "markdown_inline",
-      "regex",
-      -- language packs handle c, cpp, python, rust, go
+    treesitter = {
+      ensure_installed = {
+        "lua",
+        "vim",
+        "vimdoc",
+        "bash",
+        "json",
+        "jsonc",
+        "yaml",
+        "toml",
+        "markdown",
+        "markdown_inline",
+        "regex",
+        -- language packs handle c, cpp, python, rust, go
+      },
     },
   },
 }
