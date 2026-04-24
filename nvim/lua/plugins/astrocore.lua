@@ -21,6 +21,16 @@ return {
     diagnostics = {
       virtual_text = true,
       underline = true,
+      jump = vim.fn.has "nvim-0.12" == 1 and {
+        float = vim.NIL,
+        on_jump = function(_, bufnr)
+          vim.diagnostic.open_float {
+            bufnr = bufnr,
+            scope = "cursor",
+            focus = false,
+          }
+        end,
+      } or nil,
     },
     -- passed to `vim.filetype.add`
     filetypes = {},

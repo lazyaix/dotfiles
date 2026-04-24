@@ -2,6 +2,35 @@
 -- This is just pure lua so anything that doesn't
 -- fit in the normal config locations above can go here
 
+if vim.fn.has "nvim-0.12" == 1 then
+  local codelens = vim.lsp and vim.lsp.codelens
+  if codelens and codelens.enable and not codelens._dotfiles_refresh_compat then
+    codelens.refresh = function(opts) codelens.enable(true, { bufnr = opts and opts.bufnr }) end
+    codelens._dotfiles_refresh_compat = true
+  end
+
+  vim.api.nvim_create_autocmd("LspAttach", {
+    desc = "Add deprecated LSP client method shims for plugins",
+    callback = function(args)
+      local client = vim.lsp.get_client_by_id(args.data.client_id)
+      if not client then return end
+      local client_methods = getmetatable(client)
+      client.request = function(...)
+        if select(1, ...) == client then
+          return client_methods.request(...)
+        end
+        return client_methods.request(client, ...)
+      end
+      client.notify = function(...)
+        if select(1, ...) == client then
+          return client_methods.notify(...)
+        end
+        return client_methods.notify(client, ...)
+      end
+    end,
+  })
+end
+
 -- Mode icons: runs before heirline loads (BufEnter), so config is picked up
 local config = require("astroui").config.status
 if config then
